@@ -16,10 +16,9 @@ app = Flask(__name__)
 # Only allow csv files to be uploaded for this example
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.secret_key = 'hello'
+app.secret_key = 'CHANGE-> use more scure python module to generate if productionalizing'
 
 conn = sqlite3.connect('stocks.db')
-# conn.execute('DROP TABLE IF EXISTS stocks')
 
 conn.execute('CREATE TABLE IF NOT EXISTS stocks (Date TEXT, Open REAL, Symbol TEXT)')
 print("Table created successfully")
@@ -27,17 +26,10 @@ conn.commit()
 
 table_name = 'stocks'
 
-
 @app.route('/', methods=['GET', 'POST'])
 def uploadFile():
     if request.method == 'POST':
-        # upload file flask
         upload_files = request.files.getlist('file')
-
-        # Extracting uploaded file name
-        # Extracting uploaded file name
-        # csvfile = secure_filename(f.filename)
-        # full_path = os.path.join(UPLOAD_FOLDER, csvfile)
         with sqlite3.connect("stocks.db") as conn:
             for f in upload_files:
                 df = pd.read_csv(f, index_col=[0])

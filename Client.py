@@ -12,7 +12,7 @@ print('TensorFlow version: {}'.format(tf.__version__))
 from scipy.stats import zscore
 from datetime import datetime, timedelta
 
-run = False
+run = True
 # Step 1: Send intial data to API
 if run:
     cwd = Path(os.getcwd())
@@ -39,8 +39,6 @@ for symbol in symbols_of_interest:
     subset_df = df[df.Symbol == symbol][['Date', 'Open']]
     subset_df['Open'] = zscore(subset_df['Open']) # normalizing by zscore
     subset_df.to_sql(table_name, conn, if_exists='replace', index=False)
-
-
 
 
 # Set up structure for dataframe
@@ -80,67 +78,3 @@ model.compile(optimizer='Adam',
 )
 
 history = model.fit(x = df.iloc[:, 0:-1], y=df.iloc[:, -1],epochs=10, validation_split=0.1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # Step 4: Create Features and Labels from dataset for simple ML model
-#
-#
-#
-#
-#
-#
-#
-def get_dataset_partitions_tf(ds, ds_size, train_split=0.8, val_split=0.1, test_split=0.1, shuffle=False,
-                              shuffle_size=1000):
-    assert (train_split + test_split + val_split) == 1
-
-    if shuffle:
-        # Specify seed to always have the same split distribution between runs
-        ds = ds.shuffle(shuffle_size, seed=12)
-
-    train_size = int(train_split * ds_size)
-    val_size = int(val_split * ds_size)
-
-    train_ds = ds.take(train_size)
-    val_ds = ds.skip(train_size).take(val_size)
-    test_ds = ds.skip(train_size).skip(val_size)
-
-    return train_ds, val_ds, test_ds
-
-#
-#
-# Step 5: ML Model
-model = keras.Sequential(
-    [
-        layers.Dense(3, activation='relu', name='layer1'),
-    ]
-)
-train,validate, test = get_dataset_partitions_tf(dataset, DATASET_SIZE)
-
-model.compile(optimizer='Adams')
-model.fit(train,test,epochs=10)
-#
-# # print('hallo!')
